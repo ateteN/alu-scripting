@@ -1,18 +1,26 @@
-#!/usr/bin/python3
-"""DOCS"""
 import requests
 
-
 def top_ten(subreddit):
-    """Docs"""
-    reddit_url = "https://www.reddit.com/r/{}/hot.json" \
-        .format(subreddit)
-    headers = headers = {'User-agent': 'Mozilla/5.0'}
-    response = requests.get(reddit_url, headers=headers)
+    """Prints the titles of the first 10 hot posts for a given subreddit."""
+    URL = f"https://www.reddit.com/r/{subreddit}/hot.json"
+    HEADERS = {"User-Agent": "my_reddit_bot/1.0"}
+    PARAMS = {"limit": 10}  # Get only the first 10 posts
 
-    if response.status_code == 200:
-        data = response.json()['data']
-        for post in data['children'][:10]:
-            print(post['data']['title'])
-    else:
-        print(None)
+    try:
+        RESPONSE = requests.get(URL, headers=HEADERS, params=PARAMS, allow_redirects=False)
+        
+        # Check if the request was successful
+        if RESPONSE.status_code == 200:
+            posts = RESPONSE.json().get("data", {}).get("children", [])
+            if posts:
+                for post in posts:
+                    print(post["data"]["title"])
+            else:
+                print(None)  # No posts found
+        else:
+            print(None)  # Invalid subreddit or error
+
+    except requests.RequestException:
+        print(None)  # Network or request error
+
+
